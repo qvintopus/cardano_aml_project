@@ -23,18 +23,22 @@ This project aims to analyze Cardano transactions for Anti-Money Laundering (AML
     ```
     git clone https://github.com/your-username/cardano_aml_project.git
     ```
-2. Install the required packages:
-    ```
-    pip install -r requirements.txt
-    ```
-3. setup python's virtual environment in projects directory:
+2. setup python's virtual environment in projects directory:
     ```
     python -m venv myenv
+    ```
+3. Open python virtual environment:
+    ```
+    myenv\Scripts\activate
+    ```
+3. Install the required packages:
+    ```
+    pip install -r requirements.txt
     ```
 
 ### Usage
 
-1. Open python virtual environment
+1. Open python virtual environment - if not already
     ```
     myenv\Scripts\activate
     ```
@@ -58,6 +62,7 @@ You can customize AML scenarios by editing the `aml_scenarios.py` file. Each sce
 
 ## Authors
 Agnis Aldiņš
+
 Mārtiņš Aldiņš
 
 ## License
