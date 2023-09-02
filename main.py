@@ -1,19 +1,22 @@
-from src import data_fetcher, aml_scenarios
+from src.data_fetcher import DataFetcher  # Assuming data_fetcher.py is in a src directory
 
 def main():
-    # Stub for fetching transaction data into a Pandas DataFrame
-    df = data_fetcher.fetch_transactions_from_api('some_wallet_id')
-    if df is None:
-        df = data_fetcher.load_transactions_from_csv('some_file_path')
+    data_fetcher = DataFetcher(num_sample_records=3)  # Create 3 sample records for each table
     
-    # Stub for running AML scenarios on the DataFrame
-    chosen_scenario = 'scenario_one'  # For demo purposes, choose a single scenario to run
+    # Fetch the sample transaction data
+    df_transactions = data_fetcher.create_transaction_table()
+    print("Transaction Table:")
+    print(df_transactions)
     
-    if chosen_scenario == 'scenario_one':
-        aml_scenarios.run_scenario_one(df)
-    elif chosen_scenario == 'scenario_two':
-        aml_scenarios.run_scenario_two(df)
-    # Add more scenarios as needed
+    # Fetch the sample wallet data
+    df_wallet = data_fetcher.create_wallet_table()
+    print("\nWallet Table:")
+    print(df_wallet)
+    
+    # Fetch the sample token data
+    df_token = data_fetcher.create_token_table()
+    print("\nToken Table:")
+    print(df_token)
 
 if __name__ == '__main__':
     main()
