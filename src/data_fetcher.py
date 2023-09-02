@@ -11,7 +11,14 @@ class DataFetcher:
         for _ in range(self.num_sample_records):
             df = df.append(sample_data, ignore_index=True)
         return df
+
+    def load_csv_for_scenario(self, scenario_name):
+        file_path = f"data/{scenario_name}_data.csv"
+        return pd.read_csv(file_path)
     
+    def save_to_csv(self, df, name):
+        df.to_csv(f"data/{name}.csv", index=False)
+
     def create_transaction_table(self):
         columns = [
             'Transaction Hash',
@@ -42,20 +49,23 @@ class DataFetcher:
         columns = [
             'Wallet Address',
             'ADA Spent',
-            'Sent Token Id',
-            'Sent Token Amount',
+            'Token Id',
+            'Amount',
+            'Is Inflow',  # New boolean column to indicate if it's inflow
             'Transaction Hash FK'
         ]
         df_wallet = self._create_empty_table(columns)
         sample_data = {
-            'Wallet Address': "stake1...t49h6",
+            'Wallet Address': "stake1...",
             'ADA Spent': -1.31886,
-            'Sent Token Id': "285c...8f4",
-            'Sent Token Amount': 1.31,
-            'Transaction Hash FK': "eb79...355ace"
+            'Token Id': "285c...",
+            'Amount': 1.31,
+            'Is Inflow': False,  # Sample data for the new column
+            'Transaction Hash FK': "eb79..."
         }
         return self._populate_sample_data(df_wallet, sample_data)
-    
+
+
     def create_token_table(self):
         columns = [
             'Id',
