@@ -15,9 +15,8 @@ class ConfigManager:
             if config_data == None:
                 continue
             for key in config_data:
-                if key != "scenarios":
-                    continue
-                self.parse_config(config_data[key])
+                if key == "scenarios":
+                    self.parse_config(config_data[key])
     
     def read_config(self, path):
         config_data = None
@@ -30,6 +29,7 @@ class ConfigManager:
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON: {str(e)}")
         return config_data
+    
     # array with scenario dictionaries
     def parse_config(self, config):
         for scenario in config:
