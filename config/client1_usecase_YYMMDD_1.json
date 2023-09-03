@@ -1,0 +1,9 @@
+{
+    "scenarios": [
+        {
+          "name": "Linked Addresses",
+          "type": "linked_addresses",
+          "addresses": ["stake1uy0832h8eyxvxmtzfaanhdkcddfxjmwgfeys7dp7h2ysqhckdgvzv"]
+        }
+    ]   
+}

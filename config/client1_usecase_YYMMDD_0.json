@@ -1,0 +1,10 @@
+{
+    "scenarios": [
+        {
+          "name": "Large Transactions",
+          "type": "numeric_threshold",
+          "threshold": 200,
+          "unit": "ADA"
+        }
+    ]   
+}

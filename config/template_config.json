@@ -1,0 +1,93 @@
+{
+    "scenarios": [
+      {
+        "name": "Large Transactions",
+        "type": "numeric_threshold",
+        "threshold": 10000,
+        "unit": "ADA"
+      },
+      {
+        "name": "Aggregated Transactions",
+        "type": "numeric_aggregated",
+        "threshold": 50000,
+        "time_frame": "24h",
+        "unit": "ADA"
+      },
+      {
+        "name": "Frequent Transactions",
+        "type": "frequency",
+        "threshold": 100,
+        "time_frame": "1h"
+      },
+      {
+        "name": "Text Matching",
+        "type": "text_match",
+        "column": "status",
+        "value": "Failed"
+      },
+      {
+        "name": "List Text Matching",
+        "type": "list_text_match",
+        "column": "token",
+        "values": ["HighRiskToken1", "HighRiskToken2"]
+      },
+      {
+        "name": "Geographic Restrictions",
+        "type": "geo_restriction",
+        "countries": ["CountryCode1", "CountryCode2"]
+      },
+      {
+        "name": "Time-based Restrictions",
+        "type": "time_restriction",
+        "start_time": "00:00",
+        "end_time": "04:00"
+      },
+      {
+        "name": "Smart Contract Interaction",
+        "type": "smart_contract",
+        "addresses": ["ContractAddress1", "ContractAddress2"]
+      },
+      {
+        "name": "Transaction Fee",
+        "type": "fee_threshold",
+        "min_fee": 0.1,
+        "max_fee": 10,
+        "unit": "ADA"
+      },
+      {
+        "name": "Transaction Speed",
+        "type": "speed_threshold",
+        "max_time": "60m"
+      },
+      {
+        "name": "Anomalous Behavior",
+        "type": "anomaly_detection",
+        "model": "ML_Model_Name"
+      },
+      {
+        "name": "Linked Addresses",
+        "type": "linked_addresses",
+        "addresses": ["LinkedAddress1", "LinkedAddress2"]
+      },
+      {
+        "name": "Multi-Signature Transactions",
+        "type": "multi_signature",
+        "min_signatures": 3
+      },
+      {
+        "name": "Token Swaps",
+        "type": "token_swap",
+        "tokens": ["Stablecoin1", "Token2"]
+      },
+      {
+        "name": "Regulatory Compliance",
+        "type": "regulatory_list",
+        "list_name": "SanctionsList"
+      },
+      {
+        "name": "Nested Transactions",
+        "type": "nested_transactions",
+        "max_nested": 5
+      }
+    ]
+  }

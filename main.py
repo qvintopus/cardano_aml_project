@@ -1,5 +1,6 @@
 from src.aml_scenarios import AmlScenarios  # Replace with your actual import
 from src.table_creator import TableCreator  # Replace with your actual import
+from src.config_manager import ConfigManager  # Replace with your actual import
 
 def main():
     table_creator = TableCreator()
@@ -22,7 +23,7 @@ def main():
     aml_scenarios = AmlScenarios()
 
     # Run scenarios
-    config_one = {'specific_volume_threshold': 200.0}
+    config_one = {'specific_volume_threshold': 200.0} ## create config
     suspicious_wallets_one = aml_scenarios.scenario_one(df_wallet, config_one)
     print("\nSuspicious Wallets in Scenario One:")
     print(suspicious_wallets_one)
@@ -32,5 +33,9 @@ def main():
     print("\nConnected Wallets in Scenario Two:")
     print(connected_wallets_two)
 
+    config_manager = ConfigManager()
+    config_manager.initialize()
+
 if __name__ == '__main__':
     main()
+
