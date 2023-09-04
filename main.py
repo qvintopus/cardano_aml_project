@@ -34,7 +34,8 @@ def main():
     print(connected_wallets_two)
 
     config_manager = ConfigManager()
-    print( config_manager.fetch_configs() )
+    config_list = config_manager.fetch_configs()
+    aml_scenarios.test_wallet(df_wallet, config_list)
 
 if __name__ == '__main__':
     main()
