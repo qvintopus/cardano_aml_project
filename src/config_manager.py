@@ -5,18 +5,22 @@ import glob
 
 
 class ConfigManager:
-    def initialize(self):
+    ## Currently returns a list of scenarios, but can be expanded to extra data
+    def fetch_configs(self):
         directory_path = './config'
         text_files = glob.glob(os.path.join(directory_path, '*.json'))
         print(text_files)
+        
+        config_list = []
         for file_path in text_files:
             config_data = self.read_config(file_path)
             print(file_path)
             if config_data == None:
                 continue
             for key in config_data:
-                if key == "scenarios":
-                    self.parse_config(config_data[key])
+                if key == "scenarios": # Array of scenario configs
+                    config_list.extend(config_data[key]) # Concatinate lists together
+        return config_list
     
     def read_config(self, path):
         config_data = None
@@ -30,7 +34,7 @@ class ConfigManager:
             print(f"Error decoding JSON: {str(e)}")
         return config_data
     
-    # array with scenario dictionaries
-    def parse_config(self, config):
-        for scenario in config:
+    # list with scenario dictionaries
+    def parse_config_list(self, config_list):
+        for scenario in config_list:
             print(scenario["name"])

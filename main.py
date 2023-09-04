@@ -34,7 +34,7 @@ def main():
     print(connected_wallets_two)
 
     config_manager = ConfigManager()
-    config_manager.initialize()
+    print( config_manager.fetch_configs() )
 
 if __name__ == '__main__':
     main()
