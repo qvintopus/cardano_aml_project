@@ -1,14 +1,22 @@
 import pandas as pd
 
 class AmlScenarios:
+    
     def test_wallet(self, wallet_df, config_list):
+        # cache function references
+        scenario_dict = {
+            "numeric_threshold" : self.numeric_threshold,
+            "linked_addresses" : self.linked_addresses
+        }
         for config in config_list:
             _type = config["type"]
+            scenario_dict[_type](wallet_df, config)
+           
             # TODO: cache functions into dictionary and access with _type as a key
-            if _type == "numeric_threshold":
-                self.numeric_threshold(wallet_df, config)
-            if _type == "linked_addresses":
-                self.linked_addresses(wallet_df, config)
+            # if _type == "numeric_threshold":
+            #     self.numeric_threshold(wallet_df, config)
+            # if _type == "linked_addresses":
+            #     self.linked_addresses(wallet_df, config)
                 
     def numeric_threshold(self, wallet_df, config):
         # Retrieve parameters from config
