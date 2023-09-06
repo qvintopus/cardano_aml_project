@@ -6,7 +6,20 @@ class AmlScenarios:
         # cache function references
         function_dict = {
             "numeric_threshold" : self.numeric_threshold,
-            "linked_addresses" : self.linked_addresses
+            "linked_addresses" : self.linked_addresses,
+            "numeric_aggregated" : self.numeric_aggregated,
+            "frequency" : self.frequency,
+            "list_text_match" : self.list_text_match,
+            "geo_restriction" : self.geo_restriction,
+            "time_restriction" : self.time_restriction,
+            "smart_contract" : self.smart_contract,
+            "fee_threshold" : self.fee_threshold,
+            "speed_threshold" : self.speed_threshold,
+            "anomaly_detection" : self.anomaly_detection,
+            "multi_signature" : self.multi_signature,
+            "token_swap" : self.token_swap,
+            "regulatory_list" : self.regulatory_list,
+            "nested_transactions" : self.nested_transactions,
         }
         
         report_list = []
@@ -68,6 +81,149 @@ class AmlScenarios:
             "name" : config.get("name"),
             "type" : config.get("type"),
             "connected_wallets" : connected_wallets,
+            "config" : config
+        }
+        return report
+    
+    def numeric_aggregated(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def frequency(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def list_text_match(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def geo_restriction(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def time_restriction(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def smart_contract(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def fee_threshold(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def speed_threshold(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def anomaly_detection(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def multi_signature(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def token_swap(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def regulatory_list(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def nested_transactions(self, wallet_df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
             "config" : config
         }
         return report

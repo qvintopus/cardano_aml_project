@@ -20,12 +20,6 @@
         "time_frame": "1h"
       },
       {
-        "name": "Text Matching",
-        "type": "text_match",
-        "column": "status",
-        "value": "Failed"
-      },
-      {
         "name": "List Text Matching",
         "type": "list_text_match",
         "column": "token",
