@@ -55,12 +55,13 @@ class AmlScenarios:
         adress_list = config["addresses"]
 
         ## TODO: change function to support a list of addresses
-        print("REPORTING: linked_addresses")
         # Logic to check if each inflow wallet is connected to a specific wallet address
         inflow_wallets = wallet_df[wallet_df['Is Inflow'] == True]
-        # TODO: Not sure what this list is
-        adress_list_2 = wallet_df[wallet_df['Wallet Address'] == adress_list]['Transaction Hash FK']
-        connected_wallets = inflow_wallets[inflow_wallets['Transaction Hash FK'].isin(adress_list_2)]
+        connected_wallets = []
+        for _adress in adress_list:
+            # TODO: Not sure what this list is
+            matched_list = wallet_df[wallet_df['Wallet Address'] == _adress]['Transaction Hash FK']
+            connected_wallets = inflow_wallets[inflow_wallets['Transaction Hash FK'].isin(matched_list)]
         
         report = {
             "status" : "OK" if connected_wallets.size() < 1 else "Alert",
