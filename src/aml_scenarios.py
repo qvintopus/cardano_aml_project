@@ -41,7 +41,7 @@ class AmlScenarios:
         
         
         report = {
-            "status" : "OK" if suspicious_wallets.size() < 1 else "Alert",
+            "status" : "OK" if len(suspicious_wallets) < 1 else "Alert",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "treshold" : specific_volume_threshold,
@@ -64,7 +64,7 @@ class AmlScenarios:
             connected_wallets = inflow_wallets[inflow_wallets['Transaction Hash FK'].isin(matched_list)]
         
         report = {
-            "status" : "OK" if connected_wallets.size() < 1 else "Alert",
+            "status" : "OK" if len(connected_wallets) < 1 else "Alert",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "connected_wallets" : connected_wallets,
