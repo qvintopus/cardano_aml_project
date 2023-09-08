@@ -8,7 +8,8 @@ class CardanoCSVManager:
     def __init__(self):
         self.wallet_data = []
         self.token_data = []
-        self.transaction_data = []
+        self.address_transactions_data = []
+        self.transaction_details_data = []
         
     def add_wallet(self, wallet_info):
         for amount in wallet_info['amount']:
@@ -34,18 +35,34 @@ class CardanoCSVManager:
         ]
         self.token_data.append(row)
     
-    def add_transaction(self, transaction_info):
+    def add_address_transactions(self, address, transactions, output_amounts):
+        for tx in transactions:
+            for output in output_amounts:
+                row = [
+                    address,
+                    tx['tx_hash'],
+                    tx['tx_index'],
+                    tx['block_height'],
+                    tx['block_time'],
+                    output['unit'],
+                    output['quantity']
+                ]
+                self.address_transactions_data.append(row)
+
+    def add_transaction_details(self, tx_hash, transaction_details):
         row = [
-            transaction_info['hash'],
-            transaction_info['block'],
-            transaction_info['block_height'],
-            transaction_info['block_time'],
-            transaction_info['slot'],
-            transaction_info['fees'],
-            transaction_info['size']
+            tx_hash,
+            transaction_details['block'],
+            transaction_details['block_height'],
+            transaction_details['block_time'],
+            transaction_details['slot'],
+            transaction_details['fees'],
+            transaction_details['deposit'],
+            transaction_details['size'],
+            transaction_details['valid_contract']
         ]
-        self.transaction_data.append(row)
-    
+        self.transaction_details_data.append(row)
+
     def save_to_csv(self, filename, data, headers):
         with open(filename, mode='w', newline='') as file:
             writer = csv.writer(file)
@@ -55,7 +72,9 @@ class CardanoCSVManager:
     def save_all(self):
         self.save_to_csv('wallet_address.csv', self.wallet_data, ["address", "unit", "quantity", "stake_address", "type", "script"])
         self.save_to_csv('token.csv', self.token_data, ["asset", "policy_id", "asset_name", "quantity", "name", "description", "ticker"])
-        self.save_to_csv('transactions.csv', self.transaction_data, ["hash", "block", "block_height", "block_time", "slot", "fees", "size"])
+        self.save_to_csv('address_transactions.csv', self.address_transactions_data, ["address", "tx_hash", "tx_index", "block_height", "block_time", "unit", "quantity"])
+        self.save_to_csv('transaction_details.csv', self.transaction_details_data, ["tx_hash", "block", "block_height", "block_time", "slot", "fees", "deposit", "size", "valid_contract"])
+
 
 ########################################################
 ########################################################

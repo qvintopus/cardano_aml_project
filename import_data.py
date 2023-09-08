@@ -1,51 +1,69 @@
-from src.config_manager import CardanoCSVManager  # Replace with your actual import
+from src.csv_manager import CardanoCSVManager  # Replace with your actual import
 
 # TODO: fetch data using >> from blockfrost import BlockFrostApi, ApiError, ApiUrls
 # TODO: look below for sample to fetch all of the APIs
 
-# Example usage
-manager = CardanoCSVManager()
+
+def main():
+    # Example usage
+    manager = CardanoCSVManager()
 
 
-# TODO: use >> address = api.address(address='addr1qx7tzh4qen0p50ntefz8yujwgqt7zulef6t6vrf7dq4xa82j2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pqrkj6fh')
-# Add wallet, token, and transaction data (you would normally get this data from an API)
-manager.add_wallet({
-    "address": "addr1qx...",
-    "amount": [
-        {"unit": "lovelace", "quantity": "42000000"},
-        {"unit": "token_id", "quantity": "12"}
-    ],
-    "stake_address": "stake1ux...",
-    "type": "shelley",
-    "script": False
-})
+    # TODO: use >> address = api.address(address='addr1qx7tzh4qen0p50ntefz8yujwgqt7zulef6t6vrf7dq4xa82j2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pqrkj6fh')
+    # Add wallet, token, and transaction data (you would normally get this data from an API)
+    manager.add_wallet({
+        "address": "addr1qx...",
+        "amount": [
+            {"unit": "lovelace", "quantity": "42000000"},
+            {"unit": "token_id", "quantity": "12"}
+        ],
+        "stake_address": "stake1ux...",
+        "type": "shelley",
+        "script": False
+    })
 
-# TODO: use >> token = api.assets_policy(policy_id='qen0p50ntefz8yujwgqt7zule')
-manager.add_token({
-    "asset": "asset_id",
-    "policy_id": "policy_id",
-    "asset_name": "asset_name",
-    "quantity": "12000",
-    "metadata": {
-        "name": "nutcoin",
-        "description": "The Nut Coin",
-        "ticker": "nutc"
-    }
-})
+    # TODO: use >> token = api.assets_policy(policy_id='qen0p50ntefz8yujwgqt7zule')
+    manager.add_token({
+        "asset": "asset_id",
+        "policy_id": "policy_id",
+        "asset_name": "asset_name",
+        "quantity": "12000",
+        "metadata": {
+            "name": "nutcoin",
+            "description": "The Nut Coin",
+            "ticker": "nutc"
+        }
+    })
+    
+    # Add address transactions
+    manager.add_address_transactions('addr1...', [
+        {'tx_hash': 'hash1', 'tx_index': 6, 'block_height': 69, 'block_time': 1635505891},
+        {'tx_hash': 'hash2', 'tx_index': 9, 'block_height': 4547, 'block_time': 1635505987}
+    ], [
+        {'unit': 'lovelace', 'quantity': '42000000'},
+        {'unit': 'token1', 'quantity': '12'}
+    ])
 
-# TODO: use >> token = api.assets_policy(policy_id='qen0p50ntefz8yujwgqt7zule')
-manager.add_transaction({
-    "hash": "hash_value",
-    "block": "block_value",
-    "block_height": 123456,
-    "block_time": 1635505891,
-    "slot": 42000000,
-    "fees": "182485",
-    "size": 433
-})
+    # Add transaction details
+    manager.add_transaction_details('hash1', {
+        'block': 'block1',
+        'block_height': 123456,
+        'block_time': 1635505891,
+        'slot': 42000000,
+        'fees': '182485',
+        'deposit': '0',
+        'size': 433,
+        'valid_contract': True
+    })
 
-# Save all data to CSV files
-manager.save_all()
+    # Save all data to CSV files
+    manager.save_all()
+
+if __name__ == '__main__':
+    main()
+
+
+
 
 
 
