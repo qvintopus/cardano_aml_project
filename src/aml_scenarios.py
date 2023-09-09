@@ -9,7 +9,7 @@ class AmlScenarios:
             "linked_addresses" : self.linked_addresses,
             "numeric_aggregated" : self.numeric_aggregated,
             "frequency" : self.frequency,
-            "list_text_match" : self.list_text_match,
+            "column_list_match" : self.column_list_match,
             "geo_restriction" : self.geo_restriction,
             "time_restriction" : self.time_restriction,
             "smart_contract" : self.smart_contract,
@@ -41,6 +41,9 @@ class AmlScenarios:
         
                 
     def numeric_threshold(self, wallet_df, config):
+        # Numeric threshold for matching against individual transaction amounts.
+        # Example: Alert if any transaction is greater than 10,000 ADA.
+        
         # Retrieve parameters from config
         specific_volume_threshold = config["threshold"]
         unit = config.get("unit") ## example: ADA
@@ -69,12 +72,10 @@ class AmlScenarios:
 
         ## TODO: change function to support a list of addresses
         # Logic to check if each inflow wallet is connected to a specific wallet address
+        matched_list = wallet_df[wallet_df['Wallet Address'].isin(adress_list)]['Transaction Hash FK']
+        
         inflow_wallets = wallet_df[wallet_df['Is Inflow'] == True]
-        connected_wallets = []
-        for _adress in adress_list:
-            # TODO: Not sure what this list is
-            matched_list = wallet_df[wallet_df['Wallet Address'] == _adress]['Transaction Hash FK']
-            connected_wallets = inflow_wallets[inflow_wallets['Transaction Hash FK'].isin(matched_list)]
+        connected_wallets = inflow_wallets[inflow_wallets['Transaction Hash FK'].isin(matched_list)]
         
         report = {
             "status" : "OK" if len(connected_wallets) < 1 else "Alert",
@@ -86,7 +87,9 @@ class AmlScenarios:
         return report
     
     def numeric_aggregated(self, wallet_df, config):
-        #TODO: implement
+        # Numeric thresholds for matching against aggregated transaction amounts within a specific time frame.
+        # Example: Alert if the total transactions from an address exceed 50,000 ADA in 24 hours.
+        # TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
             "status" : "Alert",
@@ -107,13 +110,45 @@ class AmlScenarios:
         }
         return report
     
-    def list_text_match(self, wallet_df, config):
+    def text_match(self, wallet_df, config):
+        # Text for matching against transaction table columns like transaction_type, status, etc.
+        # Example: Alert if a transaction has a status of "Failed".
+        
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
             "status" : "Alert",
             "name" : config.get("name"),
             "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def column_list_match(self, wallet_df, config):
+        # List of text for matching against some of the transaction table columns.
+        # Example: Alert if a transaction involves tokens from a list of "High-Risk Tokens".
+        
+        column = config.get("column")
+        values = config.get("values")
+        print("Column: ", column)
+        
+        if column not in wallet_df.columns:
+            return {
+                "status" : "Warning",
+                "name" : config.get("name"),
+                "type" : config.get("type"),
+                "config" : config,
+                "message" : "Column doesn't exist"
+            }
+        
+        matched_list = wallet_df[wallet_df[column].isin(values)][column]
+        #TODO: implement
+        print(config.get("name"), ": ", matched_list)
+        report = {
+            "status" : "OK" if len(matched_list) < 1 else "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "match" : matched_list,
             "config" : config
         }
         return report
