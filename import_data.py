@@ -1,70 +1,56 @@
-from src.config_manager import CardanoCSVManager  # Replace with your actual import
+from src.csv_manager import CardanoCSVManager  # Replace with your actual import
+from src.api_wrapper import BlockfrostAPIWrapper  # Replace with your actual import
+from blockfrost import ApiUrls
 
-# TODO: fetch data using >> from blockfrost import BlockFrostApi, ApiError, ApiUrls
-# TODO: look below for sample to fetch all of the APIs
+API_PROJECT_ID = "missing"
 
-# Example usage
-manager = CardanoCSVManager()
+def fetch_address_data(api_wrapper, address_list, csv_manager):
+    for address in address_list:
+         # Fetching address details
+        address_details = api_wrapper.get_address(address)
+        csv_manager.add_wallet(address_details)
 
+        # Fetching transactions for each address
+        address_transactions = api_wrapper.get_address_transactions(address)
+        
+        # Transforming the transactions data
+        transformed_data, trnxs, tokens = api_wrapper.transform_address_transactions(address, address_transactions)
+        
+        # Adding transformed data to CSV manager
+        for row in transformed_data:
+            csv_manager.add_transaction_D(row)
 
-# TODO: use >> address = api.address(address='addr1qx7tzh4qen0p50ntefz8yujwgqt7zulef6t6vrf7dq4xa82j2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pqrkj6fh')
-# Add wallet, token, and transaction data (you would normally get this data from an API)
-manager.add_wallet({
-    "address": "addr1qx...",
-    "amount": [
-        {"unit": "lovelace", "quantity": "42000000"},
-        {"unit": "token_id", "quantity": "12"}
-    ],
-    "stake_address": "stake1ux...",
-    "type": "shelley",
-    "script": False
-})
+        for row in trnxs:
+            csv_manager.add_transaction_details_D(row)
 
-# TODO: use >> token = api.assets_policy(policy_id='qen0p50ntefz8yujwgqt7zule')
-manager.add_token({
-    "asset": "asset_id",
-    "policy_id": "policy_id",
-    "asset_name": "asset_name",
-    "quantity": "12000",
-    "metadata": {
-        "name": "nutcoin",
-        "description": "The Nut Coin",
-        "ticker": "nutc"
-    }
-})
+        for row in tokens:
+            csv_manager.add_token_D(row)
 
-# TODO: use >> token = api.assets_policy(policy_id='qen0p50ntefz8yujwgqt7zule')
-manager.add_transaction({
-    "hash": "hash_value",
-    "block": "block_value",
-    "block_height": 123456,
-    "block_time": 1635505891,
-    "slot": 42000000,
-    "fees": "182485",
-    "size": 433
-})
+        
 
-# Save all data to CSV files
-manager.save_all()
+def main():
+    global API_PROJECT_ID
+    if API_PROJECT_ID == "missing":
+        print("ERROR: missing project ID. Please add it from you BlackFrost API access.")
+        exit()
 
+    print("initiating data import...")
+    csv_manager = CardanoCSVManager()
+    api_wrapper = BlockfrostAPIWrapper(project_id=API_PROJECT_ID,base_url=ApiUrls.mainnet.value)
 
+    # List of addresses to fetch data for
+    address_list = [
+        'addr1qx7tzh4qen0p50ntefz8yujwgqt7zulef6t6vrf7dq4xa82j2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pqrkj6fh',
+        # Add more addresses here
+    ]
 
+    # Fetch and store all required data
+    fetch_address_data(api_wrapper, address_list, csv_manager)
 
-# api = BlockFrostApi(
-#     project_id='mainnet9ZJfvUG00pAi98d52Nr2OUdLb3oCJYBm',  # or export environment variable BLOCKFROST_PROJECT_ID
-#     # optional: pass base_url or export BLOCKFROST_API_URL to use testnet, defaults to ApiUrls.mainnet.value
-#     base_url=ApiUrls.mainnet.value,
-# )
-# try:
-#     health = api.health()
-#     print(health)   # prints object:    HealthResponse(is_healthy=True)
+    # Save all data to CSV files
+    csv_manager.save_all("02_real")
 
-#     address = api.address(address='addr1qx7tzh4qen0p50ntefz8yujwgqt7zulef6t6vrf7dq4xa82j2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pqrkj6fh')
-#     print(address.type)  # prints 'shelley'
-#     print(object(address))
-#     for amount in address.amount:
-#         print("amount.unit",amount.unit)  # prints 'lovelace'
+if __name__ == '__main__':
+    main()
 
-# except ApiError as e:
-#     print("err:",e)
 
