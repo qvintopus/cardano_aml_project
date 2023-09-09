@@ -12,17 +12,20 @@ class CardanoCSVManager:
         self.transaction_details_data = []
         
     def add_wallet(self, wallet_info):
-        for amount in wallet_info['amount']:
+        for amount in wallet_info.amount:
             row = [
-                wallet_info['address'],
-                amount['unit'],
-                amount['quantity'],
-                wallet_info.get('stake_address', ''),
-                wallet_info.get('type', ''),
-                wallet_info.get('script', '')
+                wallet_info.address,
+                amount.unit,
+                amount.quantity,
+                getattr(wallet_info, 'stake_address', ''),  # Using getattr instead of get
+                getattr(wallet_info, 'type', ''),
+                getattr(wallet_info, 'script', '')
             ]
             self.wallet_data.append(row)
     
+    def add_token_D(self, row):
+        self.token_data.append(row)
+
     def add_token(self, token_info):
         row = [
             token_info['asset'],
@@ -35,6 +38,9 @@ class CardanoCSVManager:
         ]
         self.token_data.append(row)
     
+    def add_transaction_D(self, row):
+        self.address_transactions_data.append(row)
+
     def add_address_transactions(self, address, transactions, output_amounts):
         for tx in transactions:
             for output in output_amounts:
@@ -49,6 +55,9 @@ class CardanoCSVManager:
                 ]
                 self.address_transactions_data.append(row)
 
+    def add_transaction_details_D(self, row):
+        self.transaction_details_data.append(row)
+    
     def add_transaction_details(self, tx_hash, transaction_details):
         row = [
             tx_hash,
@@ -62,18 +71,25 @@ class CardanoCSVManager:
             transaction_details['valid_contract']
         ]
         self.transaction_details_data.append(row)
+        
+    def namespace_to_list(self, namespace_obj, attributes):
+        return [getattr(namespace_obj, attr, '') for attr in attributes]
 
     def save_to_csv(self, filename, data, headers):
         with open(filename, mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(headers)
-            writer.writerows(data)
-    
-    def save_all(self):
-        self.save_to_csv('wallet_address.csv', self.wallet_data, ["address", "unit", "quantity", "stake_address", "type", "script"])
-        self.save_to_csv('token.csv', self.token_data, ["asset", "policy_id", "asset_name", "quantity", "name", "description", "ticker"])
-        self.save_to_csv('address_transactions.csv', self.address_transactions_data, ["address", "tx_hash", "tx_index", "block_height", "block_time", "unit", "quantity"])
-        self.save_to_csv('transaction_details.csv', self.transaction_details_data, ["tx_hash", "block", "block_height", "block_time", "slot", "fees", "deposit", "size", "valid_contract"])
+            writer.writerows(data)  # Make sure data is a list of lists or some other iterable of iterables
+
+
+    def save_all(self, scenario_name):
+        print(f"saving scenario {scenario_name} to CSVs...")
+        transaction_details_data_list = [self.namespace_to_list(namespace_obj, ["tx_hash", "block", "block_height", "block_time", "slot", "fees", "deposit", "size", "valid_contract"]) for namespace_obj in self.transaction_details_data]
+        token_data_list = [self.namespace_to_list(namespace_obj, ["asset", "policy_id", "asset_name", "quantity", "name", "description", "ticker"]) for namespace_obj in self.token_data]
+        self.save_to_csv(f"data/{scenario_name}_wallet_address.csv", self.wallet_data, ["address", "unit", "quantity", "stake_address", "type", "script"])
+        self.save_to_csv(f"data/{scenario_name}_token.csv", token_data_list, ["asset", "policy_id", "asset_name", "quantity", "name", "description", "ticker"])
+        self.save_to_csv(f"data/{scenario_name}_address_transactions.csv", self.address_transactions_data, ["address", "tx_hash", "tx_index", "block_height", "block_time", "unit", "quantity"])
+        self.save_to_csv(f"data/{scenario_name}_transaction_details.csv", transaction_details_data_list, ["tx_hash", "block", "block_height", "block_time", "slot", "fees", "deposit", "size", "valid_contract"])
 
 
 ########################################################
