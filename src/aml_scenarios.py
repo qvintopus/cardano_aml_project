@@ -2,6 +2,15 @@ import pandas as pd
 
 class AmlScenarios:
     
+    def generate_warning(self, config, message):
+        return {
+                "status" : "Warning",
+                "name" : config.get("name"),
+                "type" : config.get("type"),
+                "config" : config,
+                "message" : message
+            }
+    
     def test_wallet(self, wallet_df, config_list):
         # cache function references
         function_dict = {
@@ -9,6 +18,7 @@ class AmlScenarios:
             "linked_addresses" : self.linked_addresses,
             "numeric_aggregated" : self.numeric_aggregated,
             "frequency" : self.frequency,
+            "text_match" : self.text_match,
             "column_list_match" : self.column_list_match,
             "geo_restriction" : self.geo_restriction,
             "time_restriction" : self.time_restriction,
@@ -70,10 +80,10 @@ class AmlScenarios:
         # Retrieve parameters from config
         adress_list = config["addresses"]
 
-        ## TODO: change function to support a list of addresses
         # Logic to check if each inflow wallet is connected to a specific wallet address
-        matched_list = wallet_df[wallet_df['Wallet Address'].isin(adress_list)]['Transaction Hash FK']
         
+        ## TODO: Double check the logic, maybe make explicit variables
+        matched_list = wallet_df[wallet_df['Wallet Address'].isin(adress_list)]['Transaction Hash FK']
         inflow_wallets = wallet_df[wallet_df['Is Inflow'] == True]
         connected_wallets = inflow_wallets[inflow_wallets['Transaction Hash FK'].isin(matched_list)]
         
@@ -114,13 +124,20 @@ class AmlScenarios:
         # Text for matching against transaction table columns like transaction_type, status, etc.
         # Example: Alert if a transaction has a status of "Failed".
         
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
+        column = config.get("column")
+        value = config.get("value")
+        
+        if column not in wallet_df.columns:
+            return self.generate_warning(config, "Column doesn't exist")
+        
+        match_list = wallet_df[wallet_df[column] == value]
+        
         report = {
-            "status" : "Alert",
+            "status" : "OK" if len(match_list) < 1 else "Alert",
             "name" : config.get("name"),
             "type" : config.get("type"),
-            "config" : config
+            "config" : config,
+            "list" : match_list
         }
         return report
     
@@ -130,20 +147,12 @@ class AmlScenarios:
         
         column = config.get("column")
         values = config.get("values")
-        print("Column: ", column)
         
         if column not in wallet_df.columns:
-            return {
-                "status" : "Warning",
-                "name" : config.get("name"),
-                "type" : config.get("type"),
-                "config" : config,
-                "message" : "Column doesn't exist"
-            }
+            return self.generate_warning(config, "Column doesn't exist")
         
-        matched_list = wallet_df[wallet_df[column].isin(values)][column]
-        #TODO: implement
-        print(config.get("name"), ": ", matched_list)
+        matched_list = wallet_df[wallet_df[column].isin(values)]
+        
         report = {
             "status" : "OK" if len(matched_list) < 1 else "Alert",
             "name" : config.get("name"),
