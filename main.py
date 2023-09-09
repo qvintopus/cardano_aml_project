@@ -10,28 +10,30 @@ def main():
     df_transaction = table_creator.create_and_populate_table('transaction', scenario_name="01_sample", load_from_csv=True)
     df_token = table_creator.create_and_populate_table('token', scenario_name="01_sample", load_from_csv=True)
 
-    print("Transaction Table:")
-    print(df_transaction)
     
-    print("\nWallet Table:")
-    print(df_wallet)
     
-    print("\nToken Table:")
-    print(df_token)
+    # print("Transaction Table:")
+    # print(df_transaction)
+    
+    # print("\nWallet Table:")
+    # print(df_wallet)
+    
+    # print("\nToken Table:")
+    # print(df_token)
 
     # Initialize AML Scenarios
     aml_scenarios = AmlScenarios()
 
     # Run scenarios
-    config_one = {'specific_volume_threshold': 200.0} ## create config
-    suspicious_wallets_one = aml_scenarios.scenario_one(df_wallet, config_one)
-    print("\nSuspicious Wallets in Scenario One:")
-    print(suspicious_wallets_one)
+    # config_one = {'specific_volume_threshold': 200.0} ## create config
+    # suspicious_wallets_one = aml_scenarios.scenario_one(df_wallet, config_one)
+    # print("\nSuspicious Wallets in Scenario One:")
+    # print(suspicious_wallets_one)
 
-    config_two = {'specific_wallet_address': "stake1uy0832h8eyxvxmtzfaanhdkcddfxjmwgfeys7dp7h2ysqhckdgvzv"}
-    connected_wallets_two = aml_scenarios.scenario_two(df_wallet, config_two)
-    print("\nConnected Wallets in Scenario Two:")
-    print(connected_wallets_two)
+    # config_two = {'specific_wallet_address': "stake1uy0832h8eyxvxmtzfaanhdkcddfxjmwgfeys7dp7h2ysqhckdgvzv"}
+    # connected_wallets_two = aml_scenarios.scenario_two(df_wallet, config_two)
+    # print("\nConnected Wallets in Scenario Two:")
+    # print(connected_wallets_two)
 
     config_manager = ConfigManager()
     config_list = config_manager.fetch_configs()

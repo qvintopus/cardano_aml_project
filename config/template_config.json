@@ -20,8 +20,20 @@
         "time_frame": "1h"
       },
       {
+        "name": "Text Matching",
+        "type": "text_match",
+        "column": "status",
+        "value": "Failed"
+      },
+      {
+        "name": "Risky Token Match",
+        "type": "column_list_match",
+        "column": "Token Id",
+        "values": ["0x3ee2200efb3400fabb9aacf31297cbdd1d435d47"]
+      },
+      {
         "name": "List Text Matching",
-        "type": "list_text_match",
+        "type": "column_list_match",
         "column": "token",
         "values": ["HighRiskToken1", "HighRiskToken2"]
       },
@@ -61,7 +73,7 @@
       {
         "name": "Linked Addresses",
         "type": "linked_addresses",
-        "addresses": ["LinkedAddress1", "LinkedAddress2"]
+        "addresses": ["stake1uxqh9rn76n8nynsnyvf4ulndjv0srcc8jtvumut3989cqmgjt49h6", "LinkedAddress2"]
       },
       {
         "name": "Multi-Signature Transactions",
