@@ -5,7 +5,7 @@ from datetime import datetime
 
 class AmlScenarios:
     
-    def save_report_as_json(self, report_list):
+    def save_report_as_json(self, report_list: list):
         # Create 'reports' directory if it doesn't exist
         if not os.path.exists('reports'):
             os.makedirs('reports')
@@ -23,7 +23,7 @@ class AmlScenarios:
         
         print("reports saved in file:", filename)
         
-    def generate_warning(self, config, message):
+    def generate_warning(self, config: dict, message: str):
         return {
                 "status" : "Warning",
                 "name" : config.get("name"),
@@ -32,40 +32,68 @@ class AmlScenarios:
                 "message" : message
             }
       
-    def test_wallet(self, df_trnx_utxo, config_list):
-        # cache function references
-        function_dict = {
+    def test_scenarios(self, wallet_df : pd.DataFrame, utxo_df : pd.DataFrame, token_df : pd.DataFrame, config_list: list):
+        # cache functions for wallet scenarios
+        wallet_functions = {
             "numeric_threshold" : self.numeric_threshold,
-            "linked_addresses" : self.linked_addresses,
+            "wallet_linked_addresses" : self.wallet_linked_addresses,
             "numeric_aggregated" : self.numeric_aggregated,
             "frequency" : self.frequency,
             "text_match" : self.text_match,
-            "column_list_match" : self.column_list_match,
-            "geo_restriction" : self.geo_restriction,
-            "time_restriction" : self.time_restriction,
+            "wallet_list_match" : self.wallet_list_match,
             "smart_contract" : self.smart_contract,
-            "fee_threshold" : self.fee_threshold,
-            "speed_threshold" : self.speed_threshold,
             "anomaly_detection" : self.anomaly_detection,
             "multi_signature" : self.multi_signature,
             "token_swap" : self.token_swap,
-            "regulatory_list" : self.regulatory_list,
-            "nested_transactions" : self.nested_transactions,
         }
+        
+        # cache functions for utxo scenarios
+        utxo_functions = {
+            "utxo_list_match" : self.utxo_list_match,
+            "utxo_linked_addresses" : self.utxo_linked_addresses,
+            "fee_threshold" : self.fee_threshold,
+            "time_restriction" : self.time_restriction,
+            "geo_restriction" : self.geo_restriction,
+            "speed_threshold" : self.speed_threshold,
+            "nested_transactions" : self.nested_transactions,
+            "regulatory_list" : self.regulatory_list,
+            
+        }
+        # cache functions for token scenarios
+        token_functions = {
+            "token_list_match" : self.token_list_match,
+        }
+        
         
         report_list = []
         for config in config_list:
             key_type = config.get("type")
+            print(config.get("name"))
             if key_type == None:
                 print("ERROR: no type ", config)
                 continue
            
-            function_call = function_dict.get(key_type)
-            if function_call == None:
-                print("ERROR: ", key_type, " scenario isn't implemented or registered")
-                continue
-            print("Scenario: ", key_type)
-            report = function_call(df_trnx_utxo, config)
+            function_call = wallet_functions.get(key_type)
+            
+            # TODO: better implementation for data matching
+            # WALLET
+            if function_call != None:
+                report = function_call(wallet_df, config)
+            else:
+                function_call = utxo_functions.get(key_type)
+            
+                # UTXO
+                if function_call != None:
+                    report = function_call(utxo_df, config)
+                else:
+                    function_call = token_functions.get(key_type)
+            
+                    # TOKEN
+                    if function_call != None:
+                        report = function_call(token_df, config)
+                    else:
+                        print("ERROR: ", key_type, " scenario isn't implemented or registered")
+                        continue
             
             # TODO: pre-process what is needed
             report_list.append(report)
@@ -73,13 +101,13 @@ class AmlScenarios:
         # Save the report_list as a JSON object
         self.save_report_as_json(report_list)
                 
-    def numeric_threshold(self, df_trnx_utxo, config):
+    def numeric_threshold(self, utxo_df : pd.DataFrame, config: dict):
         # Retrieve parameters from config
         specific_volume_threshold = config["threshold"]
         specific_unit = config["unit"]  # example: "lovelace"
 
         # Filter the DataFrame to only include rows with the specified unit
-        df_filtered = df_trnx_utxo[df_trnx_utxo['unit'] == specific_unit]
+        df_filtered = utxo_df[utxo_df['unit'] == specific_unit]
 
         # Group by 'address' and sum the 'quantity' for each group
         address_spent_group = df_filtered.groupby('address')['quantity'].sum()
@@ -102,39 +130,43 @@ class AmlScenarios:
 
         return report
 
-    def linked_addresses(self, df_trnx_utxo, config):
+    def wallet_linked_addresses(self, wallet_df : pd.DataFrame, config: dict):
         # Retrieve parameters from config
         address_list = config["addresses"]
 
-        # Initialize an empty list to store connected transaction hashes
-        connected_tx_hashes = []
-
-        # Loop through each address in the list
-        for address in address_list:
-            # Filter the DataFrame to only include rows with the specified address
-            filtered_df = df_trnx_utxo[df_trnx_utxo['address'] == address]
-
-            # Extract unique transaction hashes for the filtered DataFrame
-            unique_tx_hashes = filtered_df['tx_hash'].unique().tolist()
-
-            # Add the unique transaction hashes to the connected_tx_hashes list
-            connected_tx_hashes.extend(unique_tx_hashes)
-
-        # Remove duplicates from the connected_tx_hashes list
-        connected_tx_hashes = list(set(connected_tx_hashes))
+        # Filter the DataFrame to only include rows with the matching addresses
+        filtered_df = wallet_df[wallet_df['address'].isin(address_list)]
 
         # Create the report
         report = {
-            "status": "OK" if len(connected_tx_hashes) < 1 else "Alert",
+            "status": "OK" if filtered_df.empty else "Alert",
             "name": config.get("name"),
             "type": config.get("type"),
-            "connected_tx_hashes": connected_tx_hashes,
+            "matched_data": filtered_df.to_dict(),
+            "config": config
+        }
+
+        return report
+
+    def utxo_linked_addresses(self, utxo_df : pd.DataFrame, config: dict):
+        # Retrieve parameters from config
+        address_list = config["addresses"]
+
+        # Filter the DataFrame to only include rows with the matching addresses
+        filtered_df = utxo_df[utxo_df['address'].isin(address_list)]
+
+        # Create the report
+        report = {
+            "status": "OK" if filtered_df.empty else "Alert",
+            "name": config.get("name"),
+            "type": config.get("type"),
+            "matched_data": filtered_df.to_dict(),
             "config": config
         }
 
         return report
     
-    def numeric_aggregated(self, _df, config):
+    def numeric_aggregated(self, _df : pd.DataFrame, config: dict):
         # Numeric thresholds for matching against aggregated transaction amounts within a specific time frame.
         # Example: Alert if the total transactions from an address exceed 50,000 ADA in 24 hours.
         # TODO: implement
@@ -147,7 +179,7 @@ class AmlScenarios:
         }
         return report
     
-    def frequency(self, _df, config):
+    def frequency(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -158,7 +190,7 @@ class AmlScenarios:
         }
         return report
     
-    def text_match(self, wallet_df, config):
+    def text_match(self, wallet_df : pd.DataFrame, config: dict):
         # Text for matching against transaction table columns like transaction_type, status, etc.
         # Example: Alert if a transaction has a status of "Failed".
         
@@ -175,11 +207,11 @@ class AmlScenarios:
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config,
-            "list" : match_list
+            "list" : match_list.to_dict()
         }
         return report
     
-    def column_list_match(self, wallet_df, config):
+    def wallet_list_match(self, wallet_df : pd.DataFrame, config: dict):
         # List of text for matching against some of the transaction table columns.
         # Example: Alert if a transaction involves tokens from a list of "High-Risk Tokens".
         
@@ -195,12 +227,54 @@ class AmlScenarios:
             "status" : "OK" if len(matched_list) < 1 else "Alert",
             "name" : config.get("name"),
             "type" : config.get("type"),
-            "match" : matched_list,
+            "match" : matched_list.to_dict(),
             "config" : config
         }
         return report
     
-    def geo_restriction(self, _df, config):
+    def utxo_list_match(self, utxo_df : pd.DataFrame, config: dict):
+        # List of text for matching against some of the transaction table columns.
+        # Example: Alert if a transaction involves tokens from a list of "High-Risk Tokens".
+        
+        column = config.get("column")
+        values = config.get("values")
+        
+        if column not in utxo_df.columns:
+            return self.generate_warning(config, "Column doesn't exist")
+        
+        matched_list = utxo_df[utxo_df[column].isin(values)]
+        
+        report = {
+            "status" : "OK" if len(matched_list) < 1 else "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "match" : matched_list.to_dict(),
+            "config" : config
+        }
+        return report
+    
+    def token_list_match(self, token_df : pd.DataFrame, config: dict):
+        # List of text for matching against some of the transaction table columns.
+        # Example: Alert if a transaction involves tokens from a list of "High-Risk Tokens".
+        
+        column = config.get("column")
+        values = config.get("values")
+        
+        if column not in token_df.columns:
+            return self.generate_warning(config, "Column doesn't exist")
+        
+        matched_list = token_df[token_df[column].isin(values)]
+        
+        report = {
+            "status" : "OK" if len(matched_list) < 1 else "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "match" : matched_list.to_dict(),
+            "config" : config
+        }
+        return report
+    
+    def geo_restriction(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -211,7 +285,7 @@ class AmlScenarios:
         }
         return report
     
-    def time_restriction(self, _df, config):
+    def time_restriction(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -222,7 +296,7 @@ class AmlScenarios:
         }
         return report
     
-    def smart_contract(self, _df, config):
+    def smart_contract(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -233,7 +307,7 @@ class AmlScenarios:
         }
         return report
     
-    def fee_threshold(self, _df, config):
+    def fee_threshold(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -244,7 +318,7 @@ class AmlScenarios:
         }
         return report
     
-    def speed_threshold(self, _df, config):
+    def speed_threshold(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -255,7 +329,7 @@ class AmlScenarios:
         }
         return report
     
-    def anomaly_detection(self, _df, config):
+    def anomaly_detection(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -266,7 +340,7 @@ class AmlScenarios:
         }
         return report
     
-    def multi_signature(self, _df, config):
+    def multi_signature(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -277,7 +351,7 @@ class AmlScenarios:
         }
         return report
     
-    def token_swap(self, _df, config):
+    def token_swap(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -288,7 +362,7 @@ class AmlScenarios:
         }
         return report
     
-    def regulatory_list(self, _df, config):
+    def regulatory_list(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
@@ -299,7 +373,7 @@ class AmlScenarios:
         }
         return report
     
-    def nested_transactions(self, _df, config):
+    def nested_transactions(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {

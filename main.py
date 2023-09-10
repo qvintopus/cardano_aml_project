@@ -13,28 +13,29 @@ def main():
     csv_manager = CardanoCSVManager()
 
     # Create and populate wallet table for scenario one
-    df_wallet = csv_manager.load_csv_to_dataframe("03_real","wallet_address")
+    wallet_df = csv_manager.load_csv_to_dataframe("03_real","wallet_address")
     # df_transaction = csv_manager.load_csv_to_dataframe("03_real","transaction_details")
-    df_transaction_utxo = csv_manager.load_csv_to_dataframe("03_real","transaction_utxos")
-    df_token = csv_manager.load_csv_to_dataframe("03_real","token")
+    utxo_df = csv_manager.load_csv_to_dataframe("03_real","transaction_utxos")
+    token_df = csv_manager.load_csv_to_dataframe("03_real","token")
 
-    print("\nToken Table:")
-    print(df_token.head(AMOUNT_DISPLAY_TABLE_DATA))
+    # print("\nWallet Table:")
+    # print(wallet_df.head(AMOUNT_DISPLAY_TABLE_DATA))
 
-    print("\nWallet Table:")
-    print(df_wallet.head(AMOUNT_DISPLAY_TABLE_DATA))
+    # print("\nTransaction UXTO Table:")
+    # print(utxo_df.head(AMOUNT_DISPLAY_TABLE_DATA))
 
-    print("Transaction UXTO Table:")
-    print(df_transaction_utxo.head(AMOUNT_DISPLAY_TABLE_DATA))
-    
+    # print("\nToken Table:")
+    # print(token_df.head(AMOUNT_DISPLAY_TABLE_DATA))
+    # print("\n------------------------------------------")
 
-    # Initialize AML Scenarios
-    aml_scenarios = AmlScenarios()
 
     # Run scenarios
     config_manager = ConfigManager()
     config_list = config_manager.fetch_configs()
-    aml_scenarios.test_wallet(df_transaction_utxo, config_list)
+    
+    # Initialize AML Scenarios
+    aml_scenarios = AmlScenarios()
+    aml_scenarios.test_scenarios(wallet_df, utxo_df, token_df, config_list)
 
 if __name__ == '__main__':
     main()
