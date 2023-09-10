@@ -2,8 +2,8 @@ from src.csv_manager import CardanoCSVManager  # Replace with your actual import
 from src.api_wrapper import BlockfrostAPIWrapper  # Replace with your actual import
 from blockfrost import ApiUrls
 
-API_PROJECT_ID = "mainnet9ZJfvUG00pAi98d52Nr2OUdLb3oCJYBm"
-AML_SCENARIO_NAME = "03_real"
+API_PROJECT_ID = "missing"
+AML_SCENARIO_NAME = "03_real" # why do I have to have it? TODO: rethink usecase
 
 def fetch_address_data(api_wrapper, address_list, csv_manager):
     for address in address_list:
@@ -13,7 +13,7 @@ def fetch_address_data(api_wrapper, address_list, csv_manager):
 
         # Fetching transactions for each address
         address_transactions = api_wrapper.get_address_transactions(address)
-        address_transactions = address_transactions[:10] # DEBUG
+        # address_transactions = address_transactions[:10] # DEBUG
 
         # Transforming the transactions data
         transformed_data, trnxs, tokens = api_wrapper.transform_address_transactions(address, address_transactions, csv_manager)

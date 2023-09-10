@@ -1,8 +1,29 @@
 import pandas as pd
+import json
+import os
+from datetime import datetime
 
 class AmlScenarios:
     
-    def test_wallet(self, wallet_df, config_list):
+    def save_report_as_json(self, report_list):
+        # Create 'reports' directory if it doesn't exist
+        if not os.path.exists('reports'):
+            os.makedirs('reports')
+
+        # Get the current date and time to use in the filename
+        current_date = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        filename = f'report_{current_date}.json'
+
+        # Define the path and filename
+        path = os.path.join('reports', filename)
+
+        # Write the JSON object to the file
+        with open(path, 'w') as f:
+            json.dump(report_list, f, indent=4)
+        
+        print("reports saved in file:", filename)
+
+    def test_wallet(self, df_trnx_utxo, config_list):
         # cache function references
         function_dict = {
             "numeric_threshold" : self.numeric_threshold,
@@ -34,22 +55,24 @@ class AmlScenarios:
                 print("ERROR: ", key_type, " scenario isn't implemented or registered")
                 continue
             print("Scenario: ", key_type)
-            report = function_call(wallet_df, config)
+            report = function_call(df_trnx_utxo, config)
             
             # TODO: pre-process what is needed
             report_list.append(report)
         
+        # Save the report_list as a JSON object
+        self.save_report_as_json(report_list)
                 
-    def numeric_threshold(self, wallet_df, config):
+    def numeric_threshold(self, df_trnx_utxo, config):
         # Retrieve parameters from config
         specific_volume_threshold = config["threshold"]
-        specific_unit = config["unit"]  # example: "ADA"
+        specific_unit = config["unit"]  # example: "lovelace"
 
         # Filter the DataFrame to only include rows with the specified unit
-        filtered_df = wallet_df[wallet_df['unit'] == specific_unit]
+        df_filtered = df_trnx_utxo[df_trnx_utxo['unit'] == specific_unit]
 
         # Group by 'address' and sum the 'quantity' for each group
-        address_spent_group = filtered_df.groupby('address')['quantity'].sum()
+        address_spent_group = df_filtered.groupby('address')['quantity'].sum()
 
         # Identify suspicious wallets
         suspicious_wallets = []
@@ -69,225 +92,179 @@ class AmlScenarios:
 
         return report
 
-    def numeric_threshold(self, wallet_df, config):
+    def linked_addresses(self, df_trnx_utxo, config):
         # Retrieve parameters from config
-        specific_volume_threshold = config["threshold"]
-        unit = config.get("unit") ## example: ADA
+        address_list = config["addresses"]
 
-        # Logic to check if each wallet address has similar inflow and outflow
-        address_spent_group = wallet_df.groupby('Wallet Address')['ADA Spent'].sum()
-        suspicious_wallets = []
-        for address, total_volume in address_spent_group.items():
-            if total_volume > specific_volume_threshold:
-                suspicious_wallets.append(address)
-        
-        
-        report = {
-            "status" : "OK" if len(suspicious_wallets) < 1 else "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "treshold" : specific_volume_threshold,
-            "suspicious_wallets" : suspicious_wallets,
-            "config" : config
-        }
-        return report
-    
-    def linked_addresses(self, wallet_df, config):
-        # Retrieve parameters from config
-        adress_list = config["addresses"]
+        # Initialize an empty list to store connected transaction hashes
+        connected_tx_hashes = []
 
-        ## TODO: change function to support a list of addresses
-        # Logic to check if each inflow wallet is connected to a specific wallet address
-        inflow_wallets = wallet_df[wallet_df['Is Inflow'] == True]
-        connected_wallets = []
-        for _adress in adress_list:
-            # TODO: Not sure what this list is
-            matched_list = wallet_df[wallet_df['Wallet Address'] == _adress]['Transaction Hash FK']
-            connected_wallets = inflow_wallets[inflow_wallets['Transaction Hash FK'].isin(matched_list)]
-        
-        report = {
-            "status" : "OK" if len(connected_wallets) < 1 else "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "connected_wallets" : connected_wallets,
-            "config" : config
-        }
-        return report
-    
-    def numeric_aggregated(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def frequency(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def list_text_match(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def geo_restriction(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def time_restriction(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def smart_contract(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def fee_threshold(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def speed_threshold(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def anomaly_detection(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def multi_signature(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def token_swap(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def regulatory_list(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def nested_transactions(self, wallet_df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "Alert",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    def scenario_one(self, wallet_df, config):
-        # Retrieve parameters from config
-        specific_volume_threshold = config.get('specific_volume_threshold', 1000.0)
+        # Loop through each address in the list
+        for address in address_list:
+            # Filter the DataFrame to only include rows with the specified address
+            filtered_df = df_trnx_utxo[df_trnx_utxo['address'] == address]
 
-        # Logic to check if each wallet address has similar inflow and outflow
-        grouped = wallet_df.groupby('Wallet Address')['ADA Spent'].sum()
-        suspicious_wallets = []
-        for address, total_volume in grouped.items():
-            if total_volume > specific_volume_threshold:
-                suspicious_wallets.append(address)
-        
-        return suspicious_wallets  # Return list of suspicious wallet addresses
+            # Extract unique transaction hashes for the filtered DataFrame
+            unique_tx_hashes = filtered_df['tx_hash'].unique().tolist()
 
-    def scenario_two(self, wallet_df, config):
-        # Retrieve parameters from config
-        specific_wallet_address = config.get('specific_wallet_address', "some_address")
+            # Add the unique transaction hashes to the connected_tx_hashes list
+            connected_tx_hashes.extend(unique_tx_hashes)
 
-        # Logic to check if each inflow wallet is connected to a specific wallet address
-        inflow_wallets = wallet_df[wallet_df['Is Inflow'] == True]
-        connected_wallets = inflow_wallets[inflow_wallets['Transaction Hash FK'].isin(
-            wallet_df[wallet_df['Wallet Address'] == specific_wallet_address]['Transaction Hash FK']
-        )]
+        # Remove duplicates from the connected_tx_hashes list
+        connected_tx_hashes = list(set(connected_tx_hashes))
 
-        return connected_wallets  # Return DataFrame of connected wallet transactions
+        # Create the report
+        report = {
+            "status": "OK" if len(connected_tx_hashes) < 1 else "Alert",
+            "name": config.get("name"),
+            "type": config.get("type"),
+            "connected_tx_hashes": connected_tx_hashes,
+            "config": config
+        }
+
+        return report
+    
+    def numeric_aggregated(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def frequency(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def list_text_match(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def geo_restriction(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def time_restriction(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def smart_contract(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def fee_threshold(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def speed_threshold(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def anomaly_detection(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def multi_signature(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def token_swap(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def regulatory_list(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def nested_transactions(self, _df, config):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    

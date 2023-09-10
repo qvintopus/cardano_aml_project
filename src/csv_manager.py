@@ -1,10 +1,8 @@
 # src/config_manager.py
 import csv
+import pandas as pd
 
 class CardanoCSVManager:
-    def __init__(self):
-        # Your code here
-        pass
     def __init__(self):
         self.wallet_data = []
         self.token_data = []
@@ -141,50 +139,16 @@ class CardanoCSVManager:
         self.save_to_csv(f"data/{scenario_name}_transaction_details.csv", transaction_details_data_list, headers_transaction_details)
         self.save_to_csv(f"data/{scenario_name}_transaction_utxos.csv", self.transaction_utxo_data, headers_transaction_utxo)
 
+    # Method to load a CSV file into a Pandas DataFrame
+    def load_csv_to_dataframe(self, scenario_name, table_name):
+        file_path = f"data/{scenario_name}_{table_name}.csv"
+        try:
+            return pd.read_csv(file_path)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"No CSV file found at {file_path}.")
+
 
 ########################################################
 ########################################################
 ########################################################
-
-
-# # Example usage
-# manager = CardanoCSVManager()
-
-# # Add wallet, token, and transaction data (you would normally get this data from an API)
-# manager.add_wallet({
-#     "address": "addr1qx...",
-#     "amount": [
-#         {"unit": "lovelace", "quantity": "42000000"},
-#         {"unit": "token_id", "quantity": "12"}
-#     ],
-#     "stake_address": "stake1ux...",
-#     "type": "shelley",
-#     "script": False
-# })
-
-# manager.add_token({
-#     "asset": "asset_id",
-#     "policy_id": "policy_id",
-#     "asset_name": "asset_name",
-#     "quantity": "12000",
-#     "metadata": {
-#         "name": "nutcoin",
-#         "description": "The Nut Coin",
-#         "ticker": "nutc"
-#     }
-# })
-
-# manager.add_transaction({
-#     "hash": "hash_value",
-#     "block": "block_value",
-#     "block_height": 123456,
-#     "block_time": 1635505891,
-#     "slot": 42000000,
-#     "fees": "182485",
-#     "size": 433
-# })
-
-# # Save all data to CSV files
-# manager.save_all()
-
 

@@ -46,7 +46,7 @@ class BlockfrostAPIWrapper:
                 transformed_data.append([address, tx_hash, tx_index, block_height, block_time, unit, quantity])
 
         tokens_unique = list(set(tokens_raw))
-        tokens_unique = tokens_unique[:20] # debug limiter
+        # tokens_unique = tokens_unique[:20] # DEBUG limiter
         for token in tokens_unique:
             print("fetching token:", token)
             if token == "lovelace":
