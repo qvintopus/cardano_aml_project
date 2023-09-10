@@ -3,6 +3,7 @@ from src.api_wrapper import BlockfrostAPIWrapper  # Replace with your actual imp
 from blockfrost import ApiUrls
 
 API_PROJECT_ID = "missing"
+AML_SCENARIO_NAME = "03_real" # why do I have to have it? TODO: rethink usecase
 
 def fetch_address_data(api_wrapper, address_list, csv_manager):
     for address in address_list:
@@ -12,9 +13,10 @@ def fetch_address_data(api_wrapper, address_list, csv_manager):
 
         # Fetching transactions for each address
         address_transactions = api_wrapper.get_address_transactions(address)
-        
+        # address_transactions = address_transactions[:10] # DEBUG
+
         # Transforming the transactions data
-        transformed_data, trnxs, tokens = api_wrapper.transform_address_transactions(address, address_transactions)
+        transformed_data, trnxs, tokens = api_wrapper.transform_address_transactions(address, address_transactions, csv_manager)
         
         # Adding transformed data to CSV manager
         for row in transformed_data:
@@ -26,10 +28,11 @@ def fetch_address_data(api_wrapper, address_list, csv_manager):
         for row in tokens:
             csv_manager.add_token_D(row)
 
+        # api_wrapper.get_transactions_utxo(trnxs, csv_manager)
         
 
 def main():
-    global API_PROJECT_ID
+    global API_PROJECT_ID, AML_SCENARIO_NAME
     if API_PROJECT_ID == "missing":
         print("ERROR: missing project ID. Please add it from you BlackFrost API access.")
         exit()
@@ -48,7 +51,7 @@ def main():
     fetch_address_data(api_wrapper, address_list, csv_manager)
 
     # Save all data to CSV files
-    csv_manager.save_all("02_real")
+    csv_manager.save_all(AML_SCENARIO_NAME)
 
 if __name__ == '__main__':
     main()
