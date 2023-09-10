@@ -43,6 +43,35 @@ class AmlScenarios:
     def numeric_threshold(self, wallet_df, config):
         # Retrieve parameters from config
         specific_volume_threshold = config["threshold"]
+        specific_unit = config["unit"]  # example: "ADA"
+
+        # Filter the DataFrame to only include rows with the specified unit
+        filtered_df = wallet_df[wallet_df['unit'] == specific_unit]
+
+        # Group by 'address' and sum the 'quantity' for each group
+        address_spent_group = filtered_df.groupby('address')['quantity'].sum()
+
+        # Identify suspicious wallets
+        suspicious_wallets = []
+        for address, total_volume in address_spent_group.items():
+            if total_volume > specific_volume_threshold:
+                suspicious_wallets.append(address)
+
+        # Create the report
+        report = {
+            "status": "OK" if len(suspicious_wallets) < 1 else "Alert",
+            "name": config.get("name"),
+            "type": config.get("type"),
+            "threshold": specific_volume_threshold,
+            "suspicious_wallets": suspicious_wallets,
+            "config": config
+        }
+
+        return report
+
+    def numeric_threshold(self, wallet_df, config):
+        # Retrieve parameters from config
+        specific_volume_threshold = config["threshold"]
         unit = config.get("unit") ## example: ADA
 
         # Logic to check if each wallet address has similar inflow and outflow

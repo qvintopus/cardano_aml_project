@@ -10,6 +10,7 @@ class CardanoCSVManager:
         self.token_data = []
         self.address_transactions_data = []
         self.transaction_details_data = []
+        self.transaction_utxo_data = []
         
     def add_wallet(self, wallet_info):
         for amount in wallet_info.amount:
@@ -72,6 +73,47 @@ class CardanoCSVManager:
         ]
         self.transaction_details_data.append(row)
         
+    def add_transaction_UTXOs(self, transaction_json):
+        # Convert Namespace to dictionary if needed
+        transaction_json = vars(transaction_json)
+
+        tx_hash = transaction_json['hash']
+        
+        # Handle inputs
+        for input in transaction_json['inputs']:
+            for amount in input.amount:
+                row = [
+                    tx_hash,
+                    'input',
+                    input.address,
+                    amount.unit,
+                    amount.quantity,
+                    input.output_index,
+                    input.data_hash,
+                    input.inline_datum,
+                    input.reference_script_hash,
+                    input.collateral,
+                    input.reference
+                ]
+                self.transaction_utxo_data.append(row)
+        
+        # Handle outputs
+        for output in transaction_json['outputs']:
+            for amount in output.amount:
+                row = [
+                    tx_hash,
+                    'output',
+                    output.address,
+                    amount.unit,
+                    amount.quantity,
+                    output.output_index,
+                    output.data_hash,
+                    output.inline_datum,
+                    output.reference_script_hash,
+                    output.collateral
+                ]
+                self.transaction_utxo_data.append(row)
+
     def namespace_to_list(self, namespace_obj, attributes):
         return [getattr(namespace_obj, attr, '') for attr in attributes]
 
@@ -84,12 +126,20 @@ class CardanoCSVManager:
 
     def save_all(self, scenario_name):
         print(f"saving scenario {scenario_name} to CSVs...")
-        transaction_details_data_list = [self.namespace_to_list(namespace_obj, ["tx_hash", "block", "block_height", "block_time", "slot", "fees", "deposit", "size", "valid_contract"]) for namespace_obj in self.transaction_details_data]
-        token_data_list = [self.namespace_to_list(namespace_obj, ["asset", "policy_id", "asset_name", "quantity", "name", "description", "ticker"]) for namespace_obj in self.token_data]
-        self.save_to_csv(f"data/{scenario_name}_wallet_address.csv", self.wallet_data, ["address", "unit", "quantity", "stake_address", "type", "script"])
-        self.save_to_csv(f"data/{scenario_name}_token.csv", token_data_list, ["asset", "policy_id", "asset_name", "quantity", "name", "description", "ticker"])
-        self.save_to_csv(f"data/{scenario_name}_address_transactions.csv", self.address_transactions_data, ["address", "tx_hash", "tx_index", "block_height", "block_time", "unit", "quantity"])
-        self.save_to_csv(f"data/{scenario_name}_transaction_details.csv", transaction_details_data_list, ["tx_hash", "block", "block_height", "block_time", "slot", "fees", "deposit", "size", "valid_contract"])
+        headers_transaction_details = ["hash", "block", "block_height", "block_time", "slot", "fees", "deposit", "size", "valid_contract"]
+        headers_token = ["asset", "policy_id", "asset_name", "quantity", "name", "description", "ticker"]
+        headers_transaction_utxo = ["tx_hash", "type", "address", "unit", "quantity", "output_index", "data_hash", "inline_datum", "reference_script_hash", "collateral", "reference"]
+        headers_address_transactions = ["address", "tx_hash", "tx_index", "block_height", "block_time", "unit", "quantity"]
+        headers_wallet = ["address", "unit", "quantity", "stake_address", "type", "script"]
+
+        transaction_details_data_list = [self.namespace_to_list(namespace_obj, headers_transaction_details) for namespace_obj in self.transaction_details_data]
+        token_data_list = [self.namespace_to_list(namespace_obj, headers_token) for namespace_obj in self.token_data]
+
+        self.save_to_csv(f"data/{scenario_name}_wallet_address.csv", self.wallet_data, headers_wallet)
+        self.save_to_csv(f"data/{scenario_name}_token.csv", token_data_list, headers_token)
+        self.save_to_csv(f"data/{scenario_name}_address_transactions.csv", self.address_transactions_data, headers_address_transactions)
+        self.save_to_csv(f"data/{scenario_name}_transaction_details.csv", transaction_details_data_list, headers_transaction_details)
+        self.save_to_csv(f"data/{scenario_name}_transaction_utxos.csv", self.transaction_utxo_data, headers_transaction_utxo)
 
 
 ########################################################
