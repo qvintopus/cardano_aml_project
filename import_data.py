@@ -2,7 +2,7 @@ from src.csv_manager import CardanoCSVManager  # Replace with your actual import
 from src.api_wrapper import BlockfrostAPIWrapper  # Replace with your actual import
 from blockfrost import ApiUrls
 
-API_PROJECT_ID = "missing"
+API_PROJECT_ID = "missing" # replace with your API Token
 AML_SCENARIO_NAME = "03_real" # why do I have to have it? TODO: rethink usecase
 
 def fetch_address_data(api_wrapper, address_list, csv_manager):

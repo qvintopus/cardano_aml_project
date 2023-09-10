@@ -27,14 +27,14 @@
       },
       {
         "name": "Risky Token Match",
-        "type": "column_list_match",
-        "column": "Token Id",
-        "values": ["0x3ee2200efb3400fabb9aacf31297cbdd1d435d47"]
+        "type": "wallet_list_match",
+        "column": "unit",
+        "values": ["2f2e0404310c106e2a260e8eb5a7e43f00cff42c667489d30e17981631363937313639313038303030"]
       },
       {
         "name": "List Text Matching",
-        "type": "column_list_match",
-        "column": "token",
+        "type": "utxo_list_match",
+        "column": "unit",
         "values": ["HighRiskToken1", "HighRiskToken2"]
       },
       {
@@ -71,9 +71,14 @@
         "model": "ML_Model_Name"
       },
       {
-        "name": "Linked Addresses",
-        "type": "linked_addresses",
-        "addresses": ["stake1uxqh9rn76n8nynsnyvf4ulndjv0srcc8jtvumut3989cqmgjt49h6", "LinkedAddress2"]
+        "name": "Wallet Linked Addresses",
+        "type": "wallet_linked_addresses",
+        "addresses": ["addr1qx7tzh4qen0p50ntefz8yujwgqt7zulef6t6vrf7dq4xa82j2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pqrkj6fh", "LinkedAddress2"]
+      },
+      {
+        "name": "Utxo Linked Addresses",
+        "type": "utxo_linked_addresses",
+        "addresses": ["addr1qyvd33sy5t5f5063gy6w9pcxdfeuas7quhzhnwf09lp9cqlqa8efs5avxgsmcndsuqymxg9k8jm2khquhr58aqdaxr4qkg7wqy", "LinkedAddress2"]
       },
       {
         "name": "Multi-Signature Transactions",

@@ -9,12 +9,10 @@ class ConfigManager:
     def fetch_configs(self):
         directory_path = './config'
         text_files = glob.glob(os.path.join(directory_path, '*.json'))
-        print(text_files)
         
         config_list = []
         for file_path in text_files:
             config_data = self.read_config(file_path)
-            print(file_path)
             if config_data == None:
                 continue
             for key in config_data:
