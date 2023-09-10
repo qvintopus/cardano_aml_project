@@ -22,7 +22,16 @@ class AmlScenarios:
             json.dump(report_list, f, indent=4)
         
         print("reports saved in file:", filename)
-
+        
+    def generate_warning(self, config, message):
+        return {
+                "status" : "Warning",
+                "name" : config.get("name"),
+                "type" : config.get("type"),
+                "config" : config,
+                "message" : message
+            }
+      
     def test_wallet(self, df_trnx_utxo, config_list):
         # cache function references
         function_dict = {
@@ -30,7 +39,8 @@ class AmlScenarios:
             "linked_addresses" : self.linked_addresses,
             "numeric_aggregated" : self.numeric_aggregated,
             "frequency" : self.frequency,
-            "list_text_match" : self.list_text_match,
+            "text_match" : self.text_match,
+            "column_list_match" : self.column_list_match,
             "geo_restriction" : self.geo_restriction,
             "time_restriction" : self.time_restriction,
             "smart_contract" : self.smart_contract,
@@ -125,7 +135,9 @@ class AmlScenarios:
         return report
     
     def numeric_aggregated(self, _df, config):
-        #TODO: implement
+        # Numeric thresholds for matching against aggregated transaction amounts within a specific time frame.
+        # Example: Alert if the total transactions from an address exceed 50,000 ADA in 24 hours.
+        # TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
             "status" : "Alert",
@@ -146,13 +158,44 @@ class AmlScenarios:
         }
         return report
     
-    def list_text_match(self, _df, config):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
+    def text_match(self, wallet_df, config):
+        # Text for matching against transaction table columns like transaction_type, status, etc.
+        # Example: Alert if a transaction has a status of "Failed".
+        
+        column = config.get("column")
+        value = config.get("value")
+        
+        if column not in wallet_df.columns:
+            return self.generate_warning(config, "Column doesn't exist")
+        
+        match_list = wallet_df[wallet_df[column] == value]
+        
         report = {
-            "status" : "Alert",
+            "status" : "OK" if len(match_list) < 1 else "Alert",
             "name" : config.get("name"),
             "type" : config.get("type"),
+            "config" : config,
+            "list" : match_list
+        }
+        return report
+    
+    def column_list_match(self, wallet_df, config):
+        # List of text for matching against some of the transaction table columns.
+        # Example: Alert if a transaction involves tokens from a list of "High-Risk Tokens".
+        
+        column = config.get("column")
+        values = config.get("values")
+        
+        if column not in wallet_df.columns:
+            return self.generate_warning(config, "Column doesn't exist")
+        
+        matched_list = wallet_df[wallet_df[column].isin(values)]
+        
+        report = {
+            "status" : "OK" if len(matched_list) < 1 else "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "match" : matched_list,
             "config" : config
         }
         return report
