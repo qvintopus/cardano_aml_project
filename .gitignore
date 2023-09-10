@@ -1,6 +1,6 @@
 
 myenv/
 src/__pycache__
-data/
+# data/
 reports/
 VARIABLES.env
