@@ -38,7 +38,6 @@ class AmlScenarios:
             "numeric_threshold" : self.numeric_threshold,
             "wallet_linked_addresses" : self.wallet_linked_addresses,
             "numeric_aggregated" : self.numeric_aggregated,
-            "frequency" : self.frequency,
             "text_match" : self.text_match,
             "wallet_list_match" : self.wallet_list_match,
             "smart_contract" : self.smart_contract,
@@ -57,6 +56,7 @@ class AmlScenarios:
             "speed_threshold" : self.speed_threshold,
             "nested_transactions" : self.nested_transactions,
             "regulatory_list" : self.regulatory_list,
+            "frequency" : self.frequency,
             
         }
         # cache functions for token scenarios
@@ -172,7 +172,7 @@ class AmlScenarios:
         # TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -183,7 +183,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -278,7 +278,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -289,7 +289,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -300,7 +300,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -311,7 +311,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -322,7 +322,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -333,7 +333,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -344,7 +344,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -355,7 +355,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -366,7 +366,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -377,7 +377,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
