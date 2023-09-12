@@ -17,6 +17,7 @@ def main():
     # df_transaction = csv_manager.load_csv_to_dataframe("03_real","transaction_details")
     utxo_df = csv_manager.load_csv_to_dataframe("03_real","transaction_utxos")
     token_df = csv_manager.load_csv_to_dataframe("03_real","token")
+    transaction_df = csv_manager.load_csv_to_dataframe("03_real","transaction_details")
 
     # print("\nWallet Table:")
     # print(wallet_df.head(AMOUNT_DISPLAY_TABLE_DATA))
@@ -35,7 +36,7 @@ def main():
     
     # Initialize AML Scenarios
     aml_scenarios = AmlScenarios()
-    aml_scenarios.test_scenarios(wallet_df, utxo_df, token_df, config_list)
+    aml_scenarios.test_scenarios(wallet_df, utxo_df, token_df, transaction_df, config_list)
 
 if __name__ == '__main__':
     main()
