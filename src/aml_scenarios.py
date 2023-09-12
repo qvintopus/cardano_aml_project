@@ -32,13 +32,12 @@ class AmlScenarios:
                 "message" : message
             }
       
-    def test_scenarios(self, wallet_df : pd.DataFrame, utxo_df : pd.DataFrame, token_df : pd.DataFrame, config_list: list):
+    def test_scenarios(self, wallet_df : pd.DataFrame, utxo_df : pd.DataFrame, token_df : pd.DataFrame, transaction_df : pd.DataFrame, config_list: list):
         # cache functions for wallet scenarios
         wallet_functions = {
             "numeric_threshold" : self.numeric_threshold,
             "wallet_linked_addresses" : self.wallet_linked_addresses,
             "numeric_aggregated" : self.numeric_aggregated,
-            "frequency" : self.frequency,
             "text_match" : self.text_match,
             "wallet_list_match" : self.wallet_list_match,
             "smart_contract" : self.smart_contract,
@@ -62,6 +61,12 @@ class AmlScenarios:
         # cache functions for token scenarios
         token_functions = {
             "token_list_match" : self.token_list_match,
+        }
+        
+        # cache functions for transaction scenarios
+        transaction_functions = {
+            "frequency" : self.frequency,
+            "transaction_list_match" : self.transaction_list_match,
         }
         
         
@@ -92,8 +97,14 @@ class AmlScenarios:
                     if function_call != None:
                         report = function_call(token_df, config)
                     else:
-                        print("ERROR: ", key_type, " scenario isn't implemented or registered")
-                        continue
+                        function_call = transaction_functions.get(transaction_df, config)
+                        
+                        # TRANSACTION
+                        if function_call != None:
+                            report = function_call(transaction_df, config)
+                        else:
+                            print("ERROR: ", key_type, " scenario isn't implemented or registered")
+                            continue
             
             # TODO: pre-process what is needed
             report_list.append(report)
@@ -172,7 +183,7 @@ class AmlScenarios:
         # TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -183,7 +194,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -274,11 +285,32 @@ class AmlScenarios:
         }
         return report
     
+    def transaction_list_match(self, transaction_df : pd.DataFrame, config: dict):
+        # List of text for matching against some of the transaction table columns.
+        # Example: Alert if a transaction involves tokens from a list of "High-Risk Tokens".
+        
+        column = config.get("column")
+        values = config.get("values")
+        
+        if column not in transaction_df.columns:
+            return self.generate_warning(config, "Column doesn't exist")
+        
+        matched_list = transaction_df[transaction_df[column].isin(values)]
+        
+        report = {
+            "status" : "OK" if len(matched_list) < 1 else "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "match" : matched_list.to_dict(),
+            "config" : config
+        }
+        return report
+    
     def geo_restriction(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -289,7 +321,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -300,7 +332,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -311,7 +343,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -322,7 +354,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -333,7 +365,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -344,7 +376,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -355,7 +387,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -366,7 +398,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config
@@ -377,7 +409,7 @@ class AmlScenarios:
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
-            "status" : "Alert",
+            "status" : "WIP",
             "name" : config.get("name"),
             "type" : config.get("type"),
             "config" : config

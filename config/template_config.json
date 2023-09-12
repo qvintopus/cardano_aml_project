@@ -38,6 +38,12 @@
         "values": ["HighRiskToken1", "HighRiskToken2"]
       },
       {
+        "name": "Transaction Text Matching",
+        "type": "transaction_list_match",
+        "column": "hash",
+        "values": ["f9813c442d56ac1ade3f85c833545fc4839ab27cdaa478e20cf7d3708202fbce"]
+      },
+      {
         "name": "Geographic Restrictions",
         "type": "geo_restriction",
         "countries": ["CountryCode1", "CountryCode2"]
