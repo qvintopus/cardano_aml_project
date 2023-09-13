@@ -50,7 +50,6 @@ class AmlScenarios:
         utxo_functions = {
             "utxo_list_match" : self.utxo_list_match,
             "utxo_linked_addresses" : self.utxo_linked_addresses,
-            "fee_threshold" : self.fee_threshold,
             "time_restriction" : self.time_restriction,
             "geo_restriction" : self.geo_restriction,
             "speed_threshold" : self.speed_threshold,
@@ -65,8 +64,9 @@ class AmlScenarios:
         
         # cache functions for transaction scenarios
         transaction_functions = {
-            "frequency" : self.frequency,
+            "fee_threshold" : self.fee_threshold,
             "transaction_list_match" : self.transaction_list_match,
+            "frequency" : self.frequency,
         }
         
         
@@ -97,7 +97,7 @@ class AmlScenarios:
                     if function_call != None:
                         report = function_call(token_df, config)
                     else:
-                        function_call = transaction_functions.get(transaction_df, config)
+                        function_call = transaction_functions.get(key_type)
                         
                         # TRANSACTION
                         if function_call != None:
@@ -175,30 +175,6 @@ class AmlScenarios:
             "config": config
         }
 
-        return report
-    
-    def numeric_aggregated(self, _df : pd.DataFrame, config: dict):
-        # Numeric thresholds for matching against aggregated transaction amounts within a specific time frame.
-        # Example: Alert if the total transactions from an address exceed 50,000 ADA in 24 hours.
-        # TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "WIP",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def frequency(self, _df : pd.DataFrame, config: dict):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "WIP",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
         return report
     
     def text_match(self, wallet_df : pd.DataFrame, config: dict):
@@ -306,6 +282,50 @@ class AmlScenarios:
         }
         return report
     
+    def fee_threshold(self, transaction_df : pd.DataFrame, config: dict):
+        column = "fees"
+        treshold = config.get("treshold")
+        if column not in transaction_df.columns:
+            return self.generate_warning(config, "Fees column doesn't exist in data")
+        
+        if config.get("is_max"):
+            matched_list = transaction_df[transaction_df[column] >= treshold]
+        else:
+            matched_list = transaction_df[transaction_df[column] <= treshold]
+        
+        report = {
+            "status" : "OK" if matched_list.empty else "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "match" : matched_list.to_dict(),
+            "config" : config
+        }
+        return report
+    
+    def numeric_aggregated(self, _df : pd.DataFrame, config: dict):
+        # Numeric thresholds for matching against aggregated transaction amounts within a specific time frame.
+        # Example: Alert if the total transactions from an address exceed 50,000 ADA in 24 hours.
+        # TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "WIP",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
+    def frequency(self, _df : pd.DataFrame, config: dict):
+        #TODO: implement
+        print("ERROR: ", config.get("type"), " not implemented")
+        report = {
+            "status" : "WIP",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "config" : config
+        }
+        return report
+    
     def geo_restriction(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
@@ -329,17 +349,6 @@ class AmlScenarios:
         return report
     
     def smart_contract(self, _df : pd.DataFrame, config: dict):
-        #TODO: implement
-        print("ERROR: ", config.get("type"), " not implemented")
-        report = {
-            "status" : "WIP",
-            "name" : config.get("name"),
-            "type" : config.get("type"),
-            "config" : config
-        }
-        return report
-    
-    def fee_threshold(self, _df : pd.DataFrame, config: dict):
         #TODO: implement
         print("ERROR: ", config.get("type"), " not implemented")
         report = {
