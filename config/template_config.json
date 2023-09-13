@@ -62,9 +62,8 @@
       {
         "name": "Transaction Fee",
         "type": "fee_threshold",
-        "min_fee": 0.1,
-        "max_fee": 10,
-        "unit": "ADA"
+        "is_max": true,
+        "treshold": 890233
       },
       {
         "name": "Transaction Speed",
