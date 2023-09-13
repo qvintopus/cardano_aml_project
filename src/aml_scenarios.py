@@ -55,7 +55,7 @@ class AmlScenarios:
             "speed_threshold" : self.speed_threshold,
             "nested_transactions" : self.nested_transactions,
             "regulatory_list" : self.regulatory_list,
-            
+            "utxo_unit_threshold"  : self.utxo_unit_threshold,
         }
         # cache functions for token scenarios
         token_functions = {
@@ -292,6 +292,27 @@ class AmlScenarios:
             matched_list = transaction_df[transaction_df[column] >= treshold]
         else:
             matched_list = transaction_df[transaction_df[column] <= treshold]
+        
+        report = {
+            "status" : "OK" if matched_list.empty else "Alert",
+            "name" : config.get("name"),
+            "type" : config.get("type"),
+            "match" : matched_list.to_dict(),
+            "config" : config
+        }
+        return report
+    
+    def utxo_unit_threshold(self, utxo_df : pd.DataFrame, config: dict):
+        unit = config.get("unit")
+        treshold = config.get("treshold")
+        
+        if "unit" not in utxo_df.columns:
+            return self.generate_warning(config, "Unit column doesn't exist in data")
+        
+        if config.get("is_max"):
+            matched_list = utxo_df[(utxo_df["unit"] == unit) & (utxo_df["quantity"] >= treshold)]
+        else:
+            matched_list = utxo_df[(utxo_df["unit"] == unit) & (utxo_df["quantity"] <= treshold)]
         
         report = {
             "status" : "OK" if matched_list.empty else "Alert",
