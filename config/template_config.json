@@ -66,6 +66,13 @@
         "treshold": 890233
       },
       {
+        "name": "Utxo Unit Threshold",
+        "type": "utxo_unit_threshold",
+        "unit": "lovelace",
+        "is_max": true,
+        "treshold": 500000000
+      },
+      {
         "name": "Transaction Speed",
         "type": "speed_threshold",
         "max_time": "60m"
